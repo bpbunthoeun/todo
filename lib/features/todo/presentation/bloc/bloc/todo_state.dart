@@ -28,8 +28,8 @@ final class Success extends TodoState {
       {super.key, required super.todos, super.filter = const <Todo>[]});
 }
 
-final class Failure extends TodoState {
-  const Failure(
+final class Fail extends TodoState {
+  const Fail(
       {this.title,
       required this.error,
       required super.todos,

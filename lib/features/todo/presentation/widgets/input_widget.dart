@@ -33,7 +33,7 @@ class _InputWidgetState extends State<InputWidget> {
       listener: (context, state) {
         if (state is Success && state.key != null) {
           Navigator.pop(context);
-        } else if (state is Failure) {
+        } else if (state is Fail) {
           _controller.text = state.title!;
         }
       },

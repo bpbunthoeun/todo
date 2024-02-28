@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
 
     return BlocListener<TodoBloc, TodoState>(
       listener: (BuildContext context, TodoState state) {
-        if (state is Failure) {
+        if (state is Fail) {
           wanning(context: context, failure: state);
         }
       },

@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/features/todo/domain/entities/todo.dart';
+import 'package:todo/features/todo/domain/usecases/add_todo_usecase.dart';
+import 'package:todo/features/todo/domain/usecases/param.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -25,9 +27,13 @@ final testData = [
 ];
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
-  TodoBloc() : super(TodoInitial(todos: testData)) {
-    on<Add>((event, emit) {
+  final AddTodoUseCase _addTodoUseCase;
+  TodoBloc({required AddTodoUseCase addTodoUseCase})
+      : _addTodoUseCase = addTodoUseCase,
+        super(TodoInitial(todos: testData)) {
+    on<Add>((event, emit) async {
       emit(Loading(todos: state.todos, filter: state.filter));
+      
       // make sure that there is no leading or trilling space.
       // and prevent the empty space input
       final title = event.todo.title.trim();
@@ -37,13 +43,14 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
           ) ||
           title.isEmpty) {
         // emit the failure and alert to the user
-        emit(Failure(
+        emit(Fail(
             title: title,
             error: Error.duplicate,
             todos: state.todos,
             filter: state.filter));
       } else {
         final todo = Todo(title: title);
+        final result = await _addTodoUseCase(param: Param(todo: event.todo));
         todos = [todo, ...todos];
         emit(Success(todos: todos, key: UniqueKey(), filter: state.filter));
       }
@@ -58,8 +65,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
         emit(Success(todos: todos, filter: state.filter));
       } else {
-        emit(Failure(
-            error: Error.empty, todos: state.todos, filter: state.filter));
+        emit(
+            Fail(error: Error.empty, todos: state.todos, filter: state.filter));
       }
     });
     on<Update>((event, emit) {
@@ -73,7 +80,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
           ) ||
           newTitle.isEmpty) {
         // emit the failure and alert to the user
-        emit(Failure(
+        emit(Fail(
             title: newTitle,
             error: Error.duplicate,
             todos: state.todos,
