@@ -33,7 +33,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
         super(TodoInitial(todos: testData)) {
     on<Add>((event, emit) async {
       emit(Loading(todos: state.todos, filter: state.filter));
-      
+
       // make sure that there is no leading or trilling space.
       // and prevent the empty space input
       final title = event.todo.title.trim();
@@ -51,8 +51,15 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       } else {
         final todo = Todo(title: title);
         final result = await _addTodoUseCase(param: Param(todo: event.todo));
-        todos = [todo, ...todos];
-        emit(Success(todos: todos, key: UniqueKey(), filter: state.filter));
+        result.fold(
+            (failure) => Fail(
+                title: title,
+                error: Error.duplicate,
+                todos: state.todos,
+                filter: state.filter), (_) {
+          todos = [todo, ...todos];
+          emit(Success(todos: todos, key: UniqueKey(), filter: state.filter));
+        });
       }
     });
     on<Remove>((event, emit) {
