@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/features/todo/domain/entities/todo.dart';
-import 'package:todo/features/todo/presentation/bloc/bloc/todo_bloc.dart';
+import 'package:todo/features/todo/presentation/bloc/todo_bloc.dart';
 
 class InputWidget extends StatefulWidget {
   const InputWidget({super.key, required this.title, this.todo});

@@ -6,7 +6,7 @@ import 'package:todo/features/todo/data/datasources/todo_remote_datasource.dart'
 import 'package:todo/features/todo/data/repository/repository_impl.dart';
 import 'package:todo/features/todo/domain/repositories/repository.dart';
 import 'package:todo/features/todo/domain/usecases/add_todo_usecase.dart';
-import 'package:todo/features/todo/presentation/bloc/bloc/todo_bloc.dart';
+import 'package:todo/features/todo/presentation/bloc/todo_bloc.dart';
 
 final sl = GetIt.instance;
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo/features/todo/presentation/bloc/bloc/todo_bloc.dart';
+import 'package:todo/features/todo/presentation/bloc/todo_bloc.dart';
 import 'package:todo/features/todo/presentation/pages/todo_item.dart';
 
 class TodoListPage extends StatefulWidget {
