@@ -7,6 +7,7 @@ import 'package:todo/features/todo/data/repository/repository_impl.dart';
 import 'package:todo/features/todo/domain/repositories/repository.dart';
 import 'package:todo/features/todo/domain/usecases/add_todo_usecase.dart';
 import 'package:todo/features/todo/domain/usecases/remove_todo_usecase.dart';
+import 'package:todo/features/todo/domain/usecases/update_todo_usecase.dart';
 import 'package:todo/features/todo/presentation/bloc/todo_bloc.dart';
 
 final sl = GetIt.instance;
@@ -27,9 +28,17 @@ void init() {
     ..registerLazySingleton(
       () => AddTodoUseCase(repository: sl()),
     )
-    ..registerLazySingleton(() => RemoveTodoUseCase(repository: sl()))
-    ..registerFactory(
-        () => TodoBloc(addTodoUseCase: sl(), removeTodoUseCase: sl()));
+    ..registerLazySingleton(
+      () => RemoveTodoUseCase(repository: sl()),
+    )
+    ..registerLazySingleton(
+      () => UpdateTodoUseCase(repository: sl()),
+    )
+    ..registerFactory(() => TodoBloc(
+          addTodoUseCase: sl(),
+          removeTodoUseCase: sl(),
+          updateTodoUseCase: sl(),
+        ));
 
   log('Done initialize.....');
 }

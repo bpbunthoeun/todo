@@ -5,6 +5,7 @@ import 'package:todo/features/todo/domain/entities/todo.dart';
 import 'package:todo/features/todo/domain/usecases/add_todo_usecase.dart';
 import 'package:todo/features/todo/domain/usecases/param.dart';
 import 'package:todo/features/todo/domain/usecases/remove_todo_usecase.dart';
+import 'package:todo/features/todo/domain/usecases/update_todo_usecase.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -30,11 +31,14 @@ final testData = [
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   final AddTodoUseCase _addTodoUseCase;
   final RemoveTodoUseCase _removeTodoUseCase;
+  final UpdateTodoUseCase _updateTodoUseCase;
   TodoBloc(
       {required AddTodoUseCase addTodoUseCase,
-      required RemoveTodoUseCase removeTodoUseCase})
+      required RemoveTodoUseCase removeTodoUseCase,
+      required UpdateTodoUseCase updateTodoUseCase})
       : _addTodoUseCase = addTodoUseCase,
         _removeTodoUseCase = removeTodoUseCase,
+        _updateTodoUseCase = updateTodoUseCase,
         super(TodoInitial(todos: testData)) {
     on<Add>((event, emit) async {
       emit(Loading(todos: state.todos, filter: state.filter));
@@ -86,7 +90,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
             Fail(error: Error.empty, todos: state.todos, filter: state.filter));
       }
     });
-    on<Update>((event, emit) {
+    // TODO(ben): create update list
+    on<Update>((event, emit) async {
       emit(Loading(todos: state.todos, filter: state.filter));
       // make sure that there is no leading or trilling space.
       // and prevent the empty space input
@@ -104,7 +109,14 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
             filter: state.filter));
       } else {
         event.todo.title = newTitle;
-        emit(Success(todos: state.todos, key: UniqueKey()));
+        final result =
+            await _updateTodoUseCase(param: Param(todo: Todo(title: newTitle)));
+        result.fold((failure) {
+          emit(Fail(
+              error: Error.empty, todos: state.todos, filter: state.filter));
+        }, (_) {
+          emit(Success(todos: state.todos, key: UniqueKey()));
+        });
       }
     });
     on<ToggleComplete>((event, emit) {

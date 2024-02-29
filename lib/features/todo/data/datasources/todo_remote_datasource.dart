@@ -4,6 +4,7 @@ import 'package:todo/features/todo/domain/usecases/param.dart';
 abstract class TodoRemoteDataSource {
   Future<void> addTodo({required Param param});
   Future<void> removeTodo({required Param param});
+  Future<void> updateTodo({required Param param});
 }
 
 class TodoRemoteDataSourceImpl implements TodoRemoteDataSource {
@@ -28,6 +29,18 @@ class TodoRemoteDataSourceImpl implements TodoRemoteDataSource {
           .collection('todo')
           .doc(param.todo!.title)
           .delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateTodo({required Param param}) async {
+    try {
+      await _firebaseFirestore
+          .collection('todo')
+          .doc(param.todo!.title)
+          .update({'title': param.todo!.title});
     } catch (e) {
       rethrow;
     }
