@@ -4,4 +4,5 @@ import 'package:todo/features/todo/domain/usecases/param.dart';
 
 abstract class Repository {
   Future<Either<Failure, void>> addTodo({required Param param});
+  Future<Either<Failure, void>> removeTodo({required Param param});
 }

@@ -21,4 +21,15 @@ class RepositoryImpl implements Repository {
       return Left(UnknownFailure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> removeTodo({required Param param}) async {
+    try {
+      return Right(await _todoRemoteDataSource.removeTodo(param: param));
+    } on AppException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
 }

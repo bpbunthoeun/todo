@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/features/todo/domain/entities/todo.dart';
 import 'package:todo/features/todo/domain/usecases/add_todo_usecase.dart';
 import 'package:todo/features/todo/domain/usecases/param.dart';
+import 'package:todo/features/todo/domain/usecases/remove_todo_usecase.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -28,8 +29,12 @@ final testData = [
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   final AddTodoUseCase _addTodoUseCase;
-  TodoBloc({required AddTodoUseCase addTodoUseCase})
+  final RemoveTodoUseCase _removeTodoUseCase;
+  TodoBloc(
+      {required AddTodoUseCase addTodoUseCase,
+      required RemoveTodoUseCase removeTodoUseCase})
       : _addTodoUseCase = addTodoUseCase,
+        _removeTodoUseCase = removeTodoUseCase,
         super(TodoInitial(todos: testData)) {
     on<Add>((event, emit) async {
       emit(Loading(todos: state.todos, filter: state.filter));
@@ -62,15 +67,20 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
         });
       }
     });
-    on<Remove>((event, emit) {
+    on<Remove>((event, emit) async {
       emit(Loading(
         todos: state.todos,
       ));
       List<Todo> todos = state.todos!;
       if (todos.length != 1) {
         todos.remove(event.todo);
-
-        emit(Success(todos: todos, filter: state.filter));
+        final result = await _removeTodoUseCase(param: Param(todo: event.todo));
+        result.fold((failure) {
+          emit(Fail(
+              error: Error.empty, todos: state.todos, filter: state.filter));
+        }, (_) {
+          emit(Success(todos: todos, filter: state.filter));
+        });
       } else {
         emit(
             Fail(error: Error.empty, todos: state.todos, filter: state.filter));

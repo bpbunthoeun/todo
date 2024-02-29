@@ -39,7 +39,6 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.4
   get_it: ^7.6.7
-  uuid: ^4.3.3
 
 dev_dependencies:
 

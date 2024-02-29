@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:todo/features/todo/domain/usecases/param.dart';
-import 'package:uuid/uuid.dart';
 
 abstract class TodoRemoteDataSource {
   Future<void> addTodo({required Param param});
+  Future<void> removeTodo({required Param param});
 }
 
 class TodoRemoteDataSourceImpl implements TodoRemoteDataSource {
@@ -13,12 +13,21 @@ class TodoRemoteDataSourceImpl implements TodoRemoteDataSource {
       : _firebaseFirestore = firebaseFirestore;
   @override
   Future<void> addTodo({required Param param}) async {
-    var uuid = Uuid().v4();
+    try {
+      await _firebaseFirestore.collection('todo').doc(param.todo!.title).set(
+          {'title': param.todo!.title, 'completed': param.todo!.completed});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeTodo({required Param param}) async {
     try {
       await _firebaseFirestore
           .collection('todo')
-          .doc(uuid)
-          .set({'id': uuid, 'title': 'testing', 'completed': false});
+          .doc(param.todo!.title)
+          .delete();
     } catch (e) {
       rethrow;
     }
